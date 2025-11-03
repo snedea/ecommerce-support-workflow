@@ -1,0 +1,975 @@
+{
+  "nodes": [
+    {
+      "id": "startAgentflow_0",
+      "position": {
+        "x": 400,
+        "y": 100
+      },
+      "type": "agentFlow",
+      "data": {
+        "id": "startAgentflow_0",
+        "label": "Start",
+        "version": 1.0,
+        "name": "startAgentflow",
+        "type": "Start",
+        "baseClasses": ["Start"],
+        "category": "Start",
+        "inputParams": [
+          {
+            "label": "Form Inputs",
+            "name": "formInputs",
+            "type": "array"
+          },
+          {
+            "label": "Form Title",
+            "name": "formTitle",
+            "type": "string"
+          },
+          {
+            "label": "Form Description",
+            "name": "formDescription",
+            "type": "string"
+          }
+        ],
+        "inputs": {
+          "formInputs": [
+            {
+              "label": "User Question",
+              "name": "question",
+              "type": "text",
+              "placeholder": "Ask me about orders, returns, products, payments, shipping, or your account..."
+            }
+          ],
+          "formTitle": "E-commerce Customer Support",
+          "formDescription": "Ask me anything about your order, returns, products, payments, shipping, account, or promotions!"
+        },
+        "outputAnchors": [
+          {
+            "id": "startAgentflow_0-output-startAgentflow-Start",
+            "name": "startAgentflow",
+            "label": "Start",
+            "description": "Start",
+            "type": "Start"
+          }
+        ]
+      },
+      "width": 300,
+      "height": 400
+    },
+    {
+      "id": "conditionAgentAgentflow_0",
+      "position": {
+        "x": 400,
+        "y": 600
+      },
+      "type": "agentFlow",
+      "data": {
+        "id": "conditionAgentAgentflow_0",
+        "label": "Detect User Intention",
+        "version": 1.1,
+        "name": "conditionAgentAgentflow",
+        "type": "ConditionAgent",
+        "baseClasses": ["ConditionAgent"],
+        "category": "Agent Flows",
+        "description": "Route user to appropriate agent based on detected intention",
+        "inputParams": [
+          {
+            "label": "Model",
+            "name": "conditionAgentModel",
+            "type": "asyncOptions",
+            "loadMethod": "listModels"
+          },
+          {
+            "label": "Instructions",
+            "name": "conditionAgentInstructions",
+            "type": "string",
+            "rows": 4
+          },
+          {
+            "label": "Input",
+            "name": "conditionAgentInput",
+            "type": "string",
+            "acceptVariable": true
+          },
+          {
+            "label": "Scenarios",
+            "name": "conditionAgentScenarios",
+            "type": "array"
+          }
+        ],
+        "inputs": {
+          "conditionAgentModel": "chatOpenAI",
+          "conditionAgentInstructions": "You are an intelligent E-commerce Support Router with expertise in customer service workflows.\n\nROUTING PROCESS:\n1. Analyze customer inquiry for primary intent\n2. Identify keywords and their context\n3. Apply conditional routing rules below\n4. Select the most appropriate specialist\n\nKEYWORD → AGENT MAPPING:\n\nOrder Tracking:\n- Keywords: 'order status', 'tracking number', 'where is my order', 'delivery estimate', 'shipment', 'WISMO'\n- Route to: Scenario 0 (Agent.OrderTracking)\n- Exception: If mentions 'return order' → Scenario 1 (Agent.Returns)\n\nReturns:\n- Keywords: 'return', 'refund', 'RMA', 'exchange', 'send back', 'defective', 'damaged'\n- Route to: Scenario 1 (Agent.Returns)\n- Exception: If only asking 'How do I return?' (informational) → Scenario 7 (Agent.GeneralHelp)\n\nProduct Info:\n- Keywords: 'product details', 'specs', 'compatibility', 'in stock', 'availability', 'recommend', 'compare'\n- Route to: Scenario 2 (Agent.ProductInfo)\n- Exception: If asking about 'discount on product' → Scenario 6 (Agent.Promotions)\n\nPayment:\n- Keywords: 'payment failed', 'billing', 'charge', 'credit card', 'payment method', 'transaction error'\n- Route to: Scenario 3 (Agent.Payment)\n- Exception: If asking for 'refund status' → Scenario 1 (Agent.Returns)\n\nShipping:\n- Keywords: 'shipping cost', 'delivery options', 'change address', 'expedited', 'shipping methods'\n- Route to: Scenario 4 (Agent.Shipping)\n- Exception: If tracking existing order → Scenario 0 (Agent.OrderTracking)\n\nAccount:\n- Keywords: 'account', 'password', 'login', 'email change', 'profile', 'loyalty points', 'reset password'\n- Route to: Scenario 5 (Agent.Account)\n- Exception: If asking about 'order history' → Scenario 0 (Agent.OrderTracking)\n\nPromotions:\n- Keywords: 'discount', 'coupon', 'promo code', 'sale', 'deal', 'offer', 'special'\n- Route to: Scenario 6 (Agent.Promotions)\n\nGeneral Help:\n- Keywords: 'hello', 'help', 'confused', 'not sure', 'question', 'hi', 'hey'\n- Route to: Scenario 7 (Agent.GeneralHelp)\n\nMULTI-INTENT HANDLING:\n- If question spans multiple domains (e.g., 'Track my return'):\n  → Route to agent handling PRIMARY action (Returns for return tracking)\n- If question has navigational + functional intent:\n  → Route to functional agent - they can provide guidance\n\nFALLBACK RULES:\n- Unclear informational questions → Scenario 7 (Agent.GeneralHelp)\n- Urgent/specific requests → Route to most likely specialist\n- Greetings/small talk → Scenario 7 (Agent.GeneralHelp)\n\nCONTEXT AWARENESS:\n- Urgency indicators ('urgent', 'ASAP', 'help!') → Bias toward action-capable specialist\n- Navigation phrases ('how do I', 'where can I') → Consider keywords carefully\n- Questions with no action verbs → Likely informational, consider General Help",
+          "conditionAgentInput": "{{question}}",
+          "conditionAgentScenarios": [
+            {"scenario": "Order status, tracking, delivery questions"},
+            {"scenario": "Returns, refunds, RMA, exchanges"},
+            {"scenario": "Product information, specs, availability"},
+            {"scenario": "Payment issues, billing, transaction problems"},
+            {"scenario": "Shipping options, costs, address changes"},
+            {"scenario": "Account management, password, loyalty"},
+            {"scenario": "Promotions, discounts, coupon codes"},
+            {"scenario": "General help, greetings, unclear requests"}
+          ],
+          "conditionAgentModelConfig": {
+            "credential": "",
+            "modelName": "gpt-4o-mini",
+            "temperature": 0.2,
+            "streaming": true,
+            "maxTokens": "",
+            "topP": "",
+            "frequencyPenalty": "",
+            "presencePenalty": "",
+            "timeout": "",
+            "conditionAgentModel": "chatOpenAI"
+          }
+        },
+        "outputAnchors": [
+          {
+            "id": "conditionAgentAgentflow_0-output-0",
+            "label": 0,
+            "name": 0,
+            "description": "Order Tracking"
+          },
+          {
+            "id": "conditionAgentAgentflow_0-output-1",
+            "label": 1,
+            "name": 1,
+            "description": "Returns"
+          },
+          {
+            "id": "conditionAgentAgentflow_0-output-2",
+            "label": 2,
+            "name": 2,
+            "description": "Product Info"
+          },
+          {
+            "id": "conditionAgentAgentflow_0-output-3",
+            "label": 3,
+            "name": 3,
+            "description": "Payment"
+          },
+          {
+            "id": "conditionAgentAgentflow_0-output-4",
+            "label": 4,
+            "name": 4,
+            "description": "Shipping"
+          },
+          {
+            "id": "conditionAgentAgentflow_0-output-5",
+            "label": 5,
+            "name": 5,
+            "description": "Account"
+          },
+          {
+            "id": "conditionAgentAgentflow_0-output-6",
+            "label": 6,
+            "name": 6,
+            "description": "Promotions"
+          },
+          {
+            "id": "conditionAgentAgentflow_0-output-7",
+            "label": 7,
+            "name": 7,
+            "description": "General Help"
+          }
+        ]
+      },
+      "width": 300,
+      "height": 500
+    },
+    {
+      "id": "agentAgentflow_1",
+      "position": {
+        "x": 100,
+        "y": 1200
+      },
+      "type": "agentFlow",
+      "data": {
+        "id": "agentAgentflow_1",
+        "label": "Agent.OrderTracking",
+        "version": 2.2,
+        "name": "agentAgentflow",
+        "type": "Agent",
+        "color": "#4DD0E1",
+        "baseClasses": ["Agent"],
+        "category": "Agent Flows",
+        "description": "Dynamically choose and utilize tools during runtime, enabling multi-step reasoning",
+        "inputs": {
+          "agentModel": "chatOpenAI",
+          "agentModelConfig": {
+            "credential": "",
+            "modelName": "gpt-4o-mini",
+            "temperature": 0.5,
+            "streaming": true,
+            "maxTokens": "",
+            "topP": "",
+            "frequencyPenalty": "",
+            "presencePenalty": "",
+            "timeout": "",
+            "agentModel": "chatOpenAI"
+          },
+          "agentMessages": [
+            {
+              "role": "system",
+              "content": "<p><em>You are an expert Order Tracking agent.</em> You help customers check order status, locate tracking numbers, provide delivery estimates, and troubleshoot shipment issues. You maintain a proactive, reassuring tone and always verify order numbers before providing information. You have access to currentDateTime to evaluate delivery dates and searXNG for carrier tracking lookup. You do NOT handle returns or exchanges - defer those to the Returns agent. You do NOT process payments - defer to Payment agent.</p>"
+            }
+          ],
+          "agentTools": [
+            {
+              "agentSelectedTool": "currentDateTime",
+              "agentSelectedToolRequiresHumanInput": "",
+              "agentSelectedToolConfig": {
+                "agentSelectedTool": "currentDateTime"
+              }
+            },
+            {
+              "agentSelectedTool": "searXNG",
+              "agentSelectedToolRequiresHumanInput": "",
+              "agentSelectedToolConfig": {
+                "apiBase": "https://s.llam.ai",
+                "toolName": "searxng-search",
+                "toolDescription": "Federated web/meta search. Use when you need fresh facts or sources. Provide a natural-language query; returns a ranked, de-duplicated JSON list of result metadata for follow-up browsing and citation.",
+                "headers": "",
+                "format": "json",
+                "categories": "",
+                "engines": "",
+                "language": "",
+                "pageno": "",
+                "time_range": "",
+                "safesearch": "",
+                "agentSelectedTool": "searXNG"
+              }
+            }
+          ],
+          "agentKnowledgeDocumentStores": "",
+          "agentKnowledgeVSEmbeddings": "",
+          "agentEnableMemory": true,
+          "agentMemoryType": "allMessages",
+          "agentMemoryWindowSize": 20
+        },
+        "outputAnchors": [
+          {
+            "id": "agentAgentflow_1-output-agentAgentflow-Agent|AgentExecutor",
+            "name": "agentAgentflow",
+            "label": "Agent",
+            "description": "Agent",
+            "type": "Agent | AgentExecutor"
+          }
+        ]
+      },
+      "width": 300,
+      "height": 500
+    },
+    {
+      "id": "agentAgentflow_2",
+      "position": {
+        "x": 450,
+        "y": 1200
+      },
+      "type": "agentFlow",
+      "data": {
+        "id": "agentAgentflow_2",
+        "label": "Agent.Returns",
+        "version": 2.2,
+        "name": "agentAgentflow",
+        "type": "Agent",
+        "color": "#4DD0E1",
+        "baseClasses": ["Agent"],
+        "category": "Agent Flows",
+        "description": "Dynamically choose and utilize tools during runtime, enabling multi-step reasoning",
+        "inputs": {
+          "agentModel": "chatOpenAI",
+          "agentModelConfig": {
+            "credential": "",
+            "modelName": "gpt-4o-mini",
+            "temperature": 0.5,
+            "streaming": true,
+            "maxTokens": "",
+            "topP": "",
+            "frequencyPenalty": "",
+            "presencePenalty": "",
+            "timeout": "",
+            "agentModel": "chatOpenAI"
+          },
+          "agentMessages": [
+            {
+              "role": "system",
+              "content": "<p><em>You are an expert Returns specialist.</em> You guide customers through return policies, initiate RMA requests, track refund status, and process exchange requests. You maintain an empathetic, solution-focused tone. You can approve returns up to $500 - escalate higher values by noting 'This requires manager approval for amounts over $500'. You have access to currentDateTime to check return windows (typically 30 days) and searXNG for policy lookup. You do NOT handle payment method updates - defer to Payment agent. You do NOT track original order shipments - defer to Order Tracking agent.</p>"
+            }
+          ],
+          "agentTools": [
+            {
+              "agentSelectedTool": "currentDateTime",
+              "agentSelectedToolRequiresHumanInput": "",
+              "agentSelectedToolConfig": {
+                "agentSelectedTool": "currentDateTime"
+              }
+            },
+            {
+              "agentSelectedTool": "searXNG",
+              "agentSelectedToolRequiresHumanInput": "",
+              "agentSelectedToolConfig": {
+                "apiBase": "https://s.llam.ai",
+                "toolName": "searxng-search",
+                "toolDescription": "Federated web/meta search. Use when you need fresh facts or sources. Provide a natural-language query; returns a ranked, de-duplicated JSON list of result metadata for follow-up browsing and citation.",
+                "headers": "",
+                "format": "json",
+                "categories": "",
+                "engines": "",
+                "language": "",
+                "pageno": "",
+                "time_range": "",
+                "safesearch": "",
+                "agentSelectedTool": "searXNG"
+              }
+            }
+          ],
+          "agentKnowledgeDocumentStores": "",
+          "agentKnowledgeVSEmbeddings": "",
+          "agentEnableMemory": true,
+          "agentMemoryType": "allMessages",
+          "agentMemoryWindowSize": 20
+        },
+        "outputAnchors": [
+          {
+            "id": "agentAgentflow_2-output-agentAgentflow-Agent|AgentExecutor",
+            "name": "agentAgentflow",
+            "label": "Agent",
+            "description": "Agent",
+            "type": "Agent | AgentExecutor"
+          }
+        ]
+      },
+      "width": 300,
+      "height": 500
+    },
+    {
+      "id": "agentAgentflow_3",
+      "position": {
+        "x": 800,
+        "y": 1200
+      },
+      "type": "agentFlow",
+      "data": {
+        "id": "agentAgentflow_3",
+        "label": "Agent.ProductInfo",
+        "version": 2.2,
+        "name": "agentAgentflow",
+        "type": "Agent",
+        "color": "#4DD0E1",
+        "baseClasses": ["Agent"],
+        "category": "Agent Flows",
+        "description": "Dynamically choose and utilize tools during runtime, enabling multi-step reasoning",
+        "inputs": {
+          "agentModel": "chatOpenAI",
+          "agentModelConfig": {
+            "credential": "",
+            "modelName": "gpt-4o-mini",
+            "temperature": 0.6,
+            "streaming": true,
+            "maxTokens": "",
+            "topP": "",
+            "frequencyPenalty": "",
+            "presencePenalty": "",
+            "timeout": "",
+            "agentModel": "chatOpenAI"
+          },
+          "agentMessages": [
+            {
+              "role": "system",
+              "content": "<p><em>You are an expert Product Information specialist.</em> You provide detailed product specifications, check availability across locations, answer compatibility questions, and make personalized recommendations based on customer needs. You maintain an enthusiastic, helpful tone. You have access to currentDateTime to check stock refresh dates and searXNG for product spec lookup. You do NOT handle pricing discounts or promotions - defer to Promotions agent. You do NOT process orders - provide information only.</p>"
+            }
+          ],
+          "agentTools": [
+            {
+              "agentSelectedTool": "currentDateTime",
+              "agentSelectedToolRequiresHumanInput": "",
+              "agentSelectedToolConfig": {
+                "agentSelectedTool": "currentDateTime"
+              }
+            },
+            {
+              "agentSelectedTool": "searXNG",
+              "agentSelectedToolRequiresHumanInput": "",
+              "agentSelectedToolConfig": {
+                "apiBase": "https://s.llam.ai",
+                "toolName": "searxng-search",
+                "toolDescription": "Federated web/meta search. Use when you need fresh facts or sources. Provide a natural-language query; returns a ranked, de-duplicated JSON list of result metadata for follow-up browsing and citation.",
+                "headers": "",
+                "format": "json",
+                "categories": "",
+                "engines": "",
+                "language": "",
+                "pageno": "",
+                "time_range": "",
+                "safesearch": "",
+                "agentSelectedTool": "searXNG"
+              }
+            }
+          ],
+          "agentKnowledgeDocumentStores": "",
+          "agentKnowledgeVSEmbeddings": "",
+          "agentEnableMemory": true,
+          "agentMemoryType": "allMessages",
+          "agentMemoryWindowSize": 20
+        },
+        "outputAnchors": [
+          {
+            "id": "agentAgentflow_3-output-agentAgentflow-Agent|AgentExecutor",
+            "name": "agentAgentflow",
+            "label": "Agent",
+            "description": "Agent",
+            "type": "Agent | AgentExecutor"
+          }
+        ]
+      },
+      "width": 300,
+      "height": 500
+    },
+    {
+      "id": "agentAgentflow_4",
+      "position": {
+        "x": 1150,
+        "y": 1200
+      },
+      "type": "agentFlow",
+      "data": {
+        "id": "agentAgentflow_4",
+        "label": "Agent.Payment",
+        "version": 2.2,
+        "name": "agentAgentflow",
+        "type": "Agent",
+        "color": "#4DD0E1",
+        "baseClasses": ["Agent"],
+        "category": "Agent Flows",
+        "description": "Dynamically choose and utilize tools during runtime, enabling multi-step reasoning",
+        "inputs": {
+          "agentModel": "chatOpenAI",
+          "agentModelConfig": {
+            "credential": "",
+            "modelName": "gpt-4o-mini",
+            "temperature": 0.5,
+            "streaming": true,
+            "maxTokens": "",
+            "topP": "",
+            "frequencyPenalty": "",
+            "presencePenalty": "",
+            "timeout": "",
+            "agentModel": "chatOpenAI"
+          },
+          "agentMessages": [
+            {
+              "role": "system",
+              "content": "<p><em>You are an expert Payment Support agent.</em> You resolve payment failures, answer billing questions, help update payment methods, and investigate transaction problems. You maintain a patient, security-conscious tone. You verify customer identity (order number or email) before discussing payment details. You have access to currentDateTime for transaction timestamps and searXNG for payment troubleshooting guides. You do NOT handle refunds - defer to Returns agent. You do NOT track shipments - defer to Order Tracking agent. Never ask for full credit card numbers.</p>"
+            }
+          ],
+          "agentTools": [
+            {
+              "agentSelectedTool": "currentDateTime",
+              "agentSelectedToolRequiresHumanInput": "",
+              "agentSelectedToolConfig": {
+                "agentSelectedTool": "currentDateTime"
+              }
+            },
+            {
+              "agentSelectedTool": "searXNG",
+              "agentSelectedToolRequiresHumanInput": "",
+              "agentSelectedToolConfig": {
+                "apiBase": "https://s.llam.ai",
+                "toolName": "searxng-search",
+                "toolDescription": "Federated web/meta search. Use when you need fresh facts or sources. Provide a natural-language query; returns a ranked, de-duplicated JSON list of result metadata for follow-up browsing and citation.",
+                "headers": "",
+                "format": "json",
+                "categories": "",
+                "engines": "",
+                "language": "",
+                "pageno": "",
+                "time_range": "",
+                "safesearch": "",
+                "agentSelectedTool": "searXNG"
+              }
+            }
+          ],
+          "agentKnowledgeDocumentStores": "",
+          "agentKnowledgeVSEmbeddings": "",
+          "agentEnableMemory": true,
+          "agentMemoryType": "allMessages",
+          "agentMemoryWindowSize": 20
+        },
+        "outputAnchors": [
+          {
+            "id": "agentAgentflow_4-output-agentAgentflow-Agent|AgentExecutor",
+            "name": "agentAgentflow",
+            "label": "Agent",
+            "description": "Agent",
+            "type": "Agent | AgentExecutor"
+          }
+        ]
+      },
+      "width": 300,
+      "height": 500
+    },
+    {
+      "id": "agentAgentflow_5",
+      "position": {
+        "x": 1500,
+        "y": 1200
+      },
+      "type": "agentFlow",
+      "data": {
+        "id": "agentAgentflow_5",
+        "label": "Agent.Shipping",
+        "version": 2.2,
+        "name": "agentAgentflow",
+        "type": "Agent",
+        "color": "#4DD0E1",
+        "baseClasses": ["Agent"],
+        "category": "Agent Flows",
+        "description": "Dynamically choose and utilize tools during runtime, enabling multi-step reasoning",
+        "inputs": {
+          "agentModel": "chatOpenAI",
+          "agentModelConfig": {
+            "credential": "",
+            "modelName": "gpt-4o-mini",
+            "temperature": 0.5,
+            "streaming": true,
+            "maxTokens": "",
+            "topP": "",
+            "frequencyPenalty": "",
+            "presencePenalty": "",
+            "timeout": "",
+            "agentModel": "chatOpenAI"
+          },
+          "agentMessages": [
+            {
+              "role": "system",
+              "content": "<p><em>You are an expert Shipping specialist.</em> You explain shipping options and costs, process address changes (for pre-shipment orders only), resolve delivery issues, and provide carrier information. You maintain a clear, logistics-focused tone. You have access to currentDateTime for delivery date calculations and searXNG for shipping rate lookup. You do NOT track existing orders - defer to Order Tracking agent. You do NOT handle returns or shipping damage claims - defer to Returns agent.</p>"
+            }
+          ],
+          "agentTools": [
+            {
+              "agentSelectedTool": "currentDateTime",
+              "agentSelectedToolRequiresHumanInput": "",
+              "agentSelectedToolConfig": {
+                "agentSelectedTool": "currentDateTime"
+              }
+            },
+            {
+              "agentSelectedTool": "searXNG",
+              "agentSelectedToolRequiresHumanInput": "",
+              "agentSelectedToolConfig": {
+                "apiBase": "https://s.llam.ai",
+                "toolName": "searxng-search",
+                "toolDescription": "Federated web/meta search. Use when you need fresh facts or sources. Provide a natural-language query; returns a ranked, de-duplicated JSON list of result metadata for follow-up browsing and citation.",
+                "headers": "",
+                "format": "json",
+                "categories": "",
+                "engines": "",
+                "language": "",
+                "pageno": "",
+                "time_range": "",
+                "safesearch": "",
+                "agentSelectedTool": "searXNG"
+              }
+            }
+          ],
+          "agentKnowledgeDocumentStores": "",
+          "agentKnowledgeVSEmbeddings": "",
+          "agentEnableMemory": true,
+          "agentMemoryType": "allMessages",
+          "agentMemoryWindowSize": 20
+        },
+        "outputAnchors": [
+          {
+            "id": "agentAgentflow_5-output-agentAgentflow-Agent|AgentExecutor",
+            "name": "agentAgentflow",
+            "label": "Agent",
+            "description": "Agent",
+            "type": "Agent | AgentExecutor"
+          }
+        ]
+      },
+      "width": 300,
+      "height": 500
+    },
+    {
+      "id": "agentAgentflow_6",
+      "position": {
+        "x": 1850,
+        "y": 1200
+      },
+      "type": "agentFlow",
+      "data": {
+        "id": "agentAgentflow_6",
+        "label": "Agent.Account",
+        "version": 2.2,
+        "name": "agentAgentflow",
+        "type": "Agent",
+        "color": "#4DD0E1",
+        "baseClasses": ["Agent"],
+        "category": "Agent Flows",
+        "description": "Dynamically choose and utilize tools during runtime, enabling multi-step reasoning",
+        "inputs": {
+          "agentModel": "chatOpenAI",
+          "agentModelConfig": {
+            "credential": "",
+            "modelName": "gpt-4o-mini",
+            "temperature": 0.5,
+            "streaming": true,
+            "maxTokens": "",
+            "topP": "",
+            "frequencyPenalty": "",
+            "presencePenalty": "",
+            "timeout": "",
+            "agentModel": "chatOpenAI"
+          },
+          "agentMessages": [
+            {
+              "role": "system",
+              "content": "<p><em>You are an expert Account Management agent.</em> You assist with profile updates, password resets, email changes, and loyalty program questions. You maintain a friendly, security-aware tone. You verify identity (email or order number) before making account changes. You have access to currentDateTime for account activity timestamps and searXNG for loyalty program info. You do NOT handle order-specific questions - defer to Order Tracking agent. You do NOT process payments - defer to Payment agent. For password resets, provide clear step-by-step instructions.</p>"
+            }
+          ],
+          "agentTools": [
+            {
+              "agentSelectedTool": "currentDateTime",
+              "agentSelectedToolRequiresHumanInput": "",
+              "agentSelectedToolConfig": {
+                "agentSelectedTool": "currentDateTime"
+              }
+            },
+            {
+              "agentSelectedTool": "searXNG",
+              "agentSelectedToolRequiresHumanInput": "",
+              "agentSelectedToolConfig": {
+                "apiBase": "https://s.llam.ai",
+                "toolName": "searxng-search",
+                "toolDescription": "Federated web/meta search. Use when you need fresh facts or sources. Provide a natural-language query; returns a ranked, de-duplicated JSON list of result metadata for follow-up browsing and citation.",
+                "headers": "",
+                "format": "json",
+                "categories": "",
+                "engines": "",
+                "language": "",
+                "pageno": "",
+                "time_range": "",
+                "safesearch": "",
+                "agentSelectedTool": "searXNG"
+              }
+            }
+          ],
+          "agentKnowledgeDocumentStores": "",
+          "agentKnowledgeVSEmbeddings": "",
+          "agentEnableMemory": true,
+          "agentMemoryType": "allMessages",
+          "agentMemoryWindowSize": 20
+        },
+        "outputAnchors": [
+          {
+            "id": "agentAgentflow_6-output-agentAgentflow-Agent|AgentExecutor",
+            "name": "agentAgentflow",
+            "label": "Agent",
+            "description": "Agent",
+            "type": "Agent | AgentExecutor"
+          }
+        ]
+      },
+      "width": 300,
+      "height": 500
+    },
+    {
+      "id": "agentAgentflow_7",
+      "position": {
+        "x": 2200,
+        "y": 1200
+      },
+      "type": "agentFlow",
+      "data": {
+        "id": "agentAgentflow_7",
+        "label": "Agent.Promotions",
+        "version": 2.2,
+        "name": "agentAgentflow",
+        "type": "Agent",
+        "color": "#4DD0E1",
+        "baseClasses": ["Agent"],
+        "category": "Agent Flows",
+        "description": "Dynamically choose and utilize tools during runtime, enabling multi-step reasoning",
+        "inputs": {
+          "agentModel": "chatOpenAI",
+          "agentModelConfig": {
+            "credential": "",
+            "modelName": "gpt-4o-mini",
+            "temperature": 0.6,
+            "streaming": true,
+            "maxTokens": "",
+            "topP": "",
+            "frequencyPenalty": "",
+            "presencePenalty": "",
+            "timeout": "",
+            "agentModel": "chatOpenAI"
+          },
+          "agentMessages": [
+            {
+              "role": "system",
+              "content": "<p><em>You are an expert Promotions specialist.</em> You provide information about current deals, validate discount codes, explain promotion terms, and highlight relevant sales. You maintain an enthusiastic, value-focused tone. You have access to currentDateTime to check promotion expiry dates and searXNG for current sales lookup. You do NOT apply discounts to existing orders - defer to Payment/Order agents. You do NOT handle product recommendations - defer to Product Info agent. Always mention promotion end dates and any restrictions.</p>"
+            }
+          ],
+          "agentTools": [
+            {
+              "agentSelectedTool": "currentDateTime",
+              "agentSelectedToolRequiresHumanInput": "",
+              "agentSelectedToolConfig": {
+                "agentSelectedTool": "currentDateTime"
+              }
+            },
+            {
+              "agentSelectedTool": "searXNG",
+              "agentSelectedToolRequiresHumanInput": "",
+              "agentSelectedToolConfig": {
+                "apiBase": "https://s.llam.ai",
+                "toolName": "searxng-search",
+                "toolDescription": "Federated web/meta search. Use when you need fresh facts or sources. Provide a natural-language query; returns a ranked, de-duplicated JSON list of result metadata for follow-up browsing and citation.",
+                "headers": "",
+                "format": "json",
+                "categories": "",
+                "engines": "",
+                "language": "",
+                "pageno": "",
+                "time_range": "",
+                "safesearch": "",
+                "agentSelectedTool": "searXNG"
+              }
+            }
+          ],
+          "agentKnowledgeDocumentStores": "",
+          "agentKnowledgeVSEmbeddings": "",
+          "agentEnableMemory": true,
+          "agentMemoryType": "allMessages",
+          "agentMemoryWindowSize": 20
+        },
+        "outputAnchors": [
+          {
+            "id": "agentAgentflow_7-output-agentAgentflow-Agent|AgentExecutor",
+            "name": "agentAgentflow",
+            "label": "Agent",
+            "description": "Agent",
+            "type": "Agent | AgentExecutor"
+          }
+        ]
+      },
+      "width": 300,
+      "height": 500
+    },
+    {
+      "id": "agentAgentflow_8",
+      "position": {
+        "x": 2550,
+        "y": 1200
+      },
+      "type": "agentFlow",
+      "data": {
+        "id": "agentAgentflow_8",
+        "label": "Agent.GeneralHelp",
+        "version": 2.2,
+        "name": "agentAgentflow",
+        "type": "Agent",
+        "color": "#4DD0E1",
+        "baseClasses": ["Agent"],
+        "category": "Agent Flows",
+        "description": "Dynamically choose and utilize tools during runtime, enabling multi-step reasoning",
+        "inputs": {
+          "agentModel": "chatOpenAI",
+          "agentModelConfig": {
+            "credential": "",
+            "modelName": "gpt-4o-mini",
+            "temperature": 0.5,
+            "streaming": true,
+            "maxTokens": "",
+            "topP": "",
+            "frequencyPenalty": "",
+            "presencePenalty": "",
+            "timeout": "",
+            "agentModel": "chatOpenAI"
+          },
+          "agentMessages": [
+            {
+              "role": "system",
+              "content": "<p><em>You are a General Help agent and welcoming first point of contact.</em> You assist with questions that don't fit specialized agents, handle greetings, provide clarification, and route users to the correct specialist when needed. You ask clarifying questions when intent is unclear. You maintain a warm, welcoming tone. You have access to currentDateTime and searXNG for general information. When you determine the user needs a specialist, say 'Let me connect you with our [X] team who can help with that specific issue.' You handle all greetings, small talk, and ambiguous requests.</p>"
+            }
+          ],
+          "agentTools": [
+            {
+              "agentSelectedTool": "currentDateTime",
+              "agentSelectedToolRequiresHumanInput": "",
+              "agentSelectedToolConfig": {
+                "agentSelectedTool": "currentDateTime"
+              }
+            },
+            {
+              "agentSelectedTool": "searXNG",
+              "agentSelectedToolRequiresHumanInput": "",
+              "agentSelectedToolConfig": {
+                "apiBase": "https://s.llam.ai",
+                "toolName": "searxng-search",
+                "toolDescription": "Federated web/meta search. Use when you need fresh facts or sources. Provide a natural-language query; returns a ranked, de-duplicated JSON list of result metadata for follow-up browsing and citation.",
+                "headers": "",
+                "format": "json",
+                "categories": "",
+                "engines": "",
+                "language": "",
+                "pageno": "",
+                "time_range": "",
+                "safesearch": "",
+                "agentSelectedTool": "searXNG"
+              }
+            }
+          ],
+          "agentKnowledgeDocumentStores": "",
+          "agentKnowledgeVSEmbeddings": "",
+          "agentEnableMemory": true,
+          "agentMemoryType": "allMessages",
+          "agentMemoryWindowSize": 20
+        },
+        "outputAnchors": [
+          {
+            "id": "agentAgentflow_8-output-agentAgentflow-Agent|AgentExecutor",
+            "name": "agentAgentflow",
+            "label": "Agent",
+            "description": "Agent",
+            "type": "Agent | AgentExecutor"
+          }
+        ]
+      },
+      "width": 300,
+      "height": 500
+    }
+  ],
+  "edges": [
+    {
+      "source": "startAgentflow_0",
+      "sourceHandle": "startAgentflow_0-output-startAgentflow-Start",
+      "target": "conditionAgentAgentflow_0",
+      "targetHandle": "conditionAgentAgentflow_0",
+      "type": "agentFlow",
+      "data": {
+        "sourceColor": "#7EE787",
+        "targetColor": "#ff8fab",
+        "edgeLabel": "question",
+        "isHumanInput": false
+      },
+      "id": "startAgentflow_0-startAgentflow_0-output-startAgentflow-Start-conditionAgentAgentflow_0-conditionAgentAgentflow_0"
+    },
+    {
+      "source": "conditionAgentAgentflow_0",
+      "sourceHandle": "conditionAgentAgentflow_0-output-0",
+      "target": "agentAgentflow_1",
+      "targetHandle": "agentAgentflow_1",
+      "type": "agentFlow",
+      "data": {
+        "sourceColor": "#ff8fab",
+        "targetColor": "#4DD0E1",
+        "edgeLabel": "Order Tracking",
+        "isHumanInput": false
+      },
+      "id": "conditionAgentAgentflow_0-conditionAgentAgentflow_0-output-0-agentAgentflow_1-agentAgentflow_1"
+    },
+    {
+      "source": "conditionAgentAgentflow_0",
+      "sourceHandle": "conditionAgentAgentflow_0-output-1",
+      "target": "agentAgentflow_2",
+      "targetHandle": "agentAgentflow_2",
+      "type": "agentFlow",
+      "data": {
+        "sourceColor": "#ff8fab",
+        "targetColor": "#4DD0E1",
+        "edgeLabel": "Returns",
+        "isHumanInput": false
+      },
+      "id": "conditionAgentAgentflow_0-conditionAgentAgentflow_0-output-1-agentAgentflow_2-agentAgentflow_2"
+    },
+    {
+      "source": "conditionAgentAgentflow_0",
+      "sourceHandle": "conditionAgentAgentflow_0-output-2",
+      "target": "agentAgentflow_3",
+      "targetHandle": "agentAgentflow_3",
+      "type": "agentFlow",
+      "data": {
+        "sourceColor": "#ff8fab",
+        "targetColor": "#4DD0E1",
+        "edgeLabel": "Product Info",
+        "isHumanInput": false
+      },
+      "id": "conditionAgentAgentflow_0-conditionAgentAgentflow_0-output-2-agentAgentflow_3-agentAgentflow_3"
+    },
+    {
+      "source": "conditionAgentAgentflow_0",
+      "sourceHandle": "conditionAgentAgentflow_0-output-3",
+      "target": "agentAgentflow_4",
+      "targetHandle": "agentAgentflow_4",
+      "type": "agentFlow",
+      "data": {
+        "sourceColor": "#ff8fab",
+        "targetColor": "#4DD0E1",
+        "edgeLabel": "Payment",
+        "isHumanInput": false
+      },
+      "id": "conditionAgentAgentflow_0-conditionAgentAgentflow_0-output-3-agentAgentflow_4-agentAgentflow_4"
+    },
+    {
+      "source": "conditionAgentAgentflow_0",
+      "sourceHandle": "conditionAgentAgentflow_0-output-4",
+      "target": "agentAgentflow_5",
+      "targetHandle": "agentAgentflow_5",
+      "type": "agentFlow",
+      "data": {
+        "sourceColor": "#ff8fab",
+        "targetColor": "#4DD0E1",
+        "edgeLabel": "Shipping",
+        "isHumanInput": false
+      },
+      "id": "conditionAgentAgentflow_0-conditionAgentAgentflow_0-output-4-agentAgentflow_5-agentAgentflow_5"
+    },
+    {
+      "source": "conditionAgentAgentflow_0",
+      "sourceHandle": "conditionAgentAgentflow_0-output-5",
+      "target": "agentAgentflow_6",
+      "targetHandle": "agentAgentflow_6",
+      "type": "agentFlow",
+      "data": {
+        "sourceColor": "#ff8fab",
+        "targetColor": "#4DD0E1",
+        "edgeLabel": "Account",
+        "isHumanInput": false
+      },
+      "id": "conditionAgentAgentflow_0-conditionAgentAgentflow_0-output-5-agentAgentflow_6-agentAgentflow_6"
+    },
+    {
+      "source": "conditionAgentAgentflow_0",
+      "sourceHandle": "conditionAgentAgentflow_0-output-6",
+      "target": "agentAgentflow_7",
+      "targetHandle": "agentAgentflow_7",
+      "type": "agentFlow",
+      "data": {
+        "sourceColor": "#ff8fab",
+        "targetColor": "#4DD0E1",
+        "edgeLabel": "Promotions",
+        "isHumanInput": false
+      },
+      "id": "conditionAgentAgentflow_0-conditionAgentAgentflow_0-output-6-agentAgentflow_7-agentAgentflow_7"
+    },
+    {
+      "source": "conditionAgentAgentflow_0",
+      "sourceHandle": "conditionAgentAgentflow_0-output-7",
+      "target": "agentAgentflow_8",
+      "targetHandle": "agentAgentflow_8",
+      "type": "agentFlow",
+      "data": {
+        "sourceColor": "#ff8fab",
+        "targetColor": "#4DD0E1",
+        "edgeLabel": "General Help",
+        "isHumanInput": false
+      },
+      "id": "conditionAgentAgentflow_0-conditionAgentAgentflow_0-output-7-agentAgentflow_8-agentAgentflow_8"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "parallel_mode": false,
+  "flowise_project": true,
+  "total_tasks": 3,
+  "tasks": [
+    {
+      "id": "flowise-workflow",
+      "description": "Create complete Flowise workflow in single JSON file",
+      "files": ["ecommerce-support-flow.json"],
+      "dependencies": [],
+      "estimated_time": "15 minutes",
+      "critical": true,
+      "notes": "MUST generate all 10 nodes + 9 edges in ONE file. NO parallel splitting. NO separate config files."
+    },
+    {
+      "id": "documentation",
+      "description": "Create README and integration guide",
+      "files": ["README.md", "INTEGRATION_GUIDE.md"],
+      "dependencies": ["flowise-workflow"],
+      "estimated_time": "3 minutes"
+    },
+    {
+      "id": "mermaid-diagram",
+      "description": "Generate Mermaid workflow diagram",
+      "files": ["WORKFLOW-DIAGRAM.md"],
+      "dependencies": ["flowise-workflow"],
+      "estimated_time": "2 minutes"
+    }
+  ]
+}
