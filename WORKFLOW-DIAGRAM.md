@@ -1,25 +1,25 @@
 ```mermaid
 %%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#4DD0E1','primaryTextColor':'#000','primaryBorderColor':'#0097A7','lineColor':'#757575','secondaryColor':'#ff8fab','tertiaryColor':'#7EE787'}}}%%
 graph TD
-    startAgentflow_0([🚀 Start])
+    startAgentflow_0([Start])
     style startAgentflow_0 fill:#7EE787,stroke:#333,stroke-width:2px
-    conditionAgentAgentflow_0{{🎯 Detect User Intention}}
+    conditionAgentAgentflow_0{{Detect User Intention}}
     style conditionAgentAgentflow_0 fill:#ff8fab,stroke:#333,stroke-width:2px
-    agentAgentflow_1[🤖 Agent.OrderTracking]
+    agentAgentflow_1[Agent.OrderTracking]
     style agentAgentflow_1 fill:#4DD0E1,stroke:#333,stroke-width:2px
-    agentAgentflow_2[🤖 Agent.Returns]
+    agentAgentflow_2[Agent.Returns]
     style agentAgentflow_2 fill:#4DD0E1,stroke:#333,stroke-width:2px
-    agentAgentflow_3[🤖 Agent.ProductInfo]
+    agentAgentflow_3[Agent.ProductInfo]
     style agentAgentflow_3 fill:#4DD0E1,stroke:#333,stroke-width:2px
-    agentAgentflow_4[🤖 Agent.Payment]
+    agentAgentflow_4[Agent.Payment]
     style agentAgentflow_4 fill:#4DD0E1,stroke:#333,stroke-width:2px
-    agentAgentflow_5[🤖 Agent.Shipping]
+    agentAgentflow_5[Agent.Shipping]
     style agentAgentflow_5 fill:#4DD0E1,stroke:#333,stroke-width:2px
-    agentAgentflow_6[🤖 Agent.Account]
+    agentAgentflow_6[Agent.Account]
     style agentAgentflow_6 fill:#4DD0E1,stroke:#333,stroke-width:2px
-    agentAgentflow_7[🤖 Agent.Promotions]
+    agentAgentflow_7[Agent.Promotions]
     style agentAgentflow_7 fill:#4DD0E1,stroke:#333,stroke-width:2px
-    agentAgentflow_8[🤖 Agent.GeneralHelp]
+    agentAgentflow_8[Agent.GeneralHelp]
     style agentAgentflow_8 fill:#4DD0E1,stroke:#333,stroke-width:2px
 
     startAgentflow_0 --> conditionAgentAgentflow_0
